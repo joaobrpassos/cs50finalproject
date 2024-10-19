@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+<h1 class="text-center">Rules</h1>
+<ol class="list-group list-group-numbered">
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">Dont post anything ilegal</div>
+        User will be banned
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">Dont post anything nsfw</div>
+        User will be banned
+      </div>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div class="ms-2 me-auto">
+        <div class="fw-bold">Be respectfull</div>
+        User will be banned or post/reply deleted
+      </div>
+    </li>
+  </ol>
+  <br>
+  <h1 class="text-center">Boards</h1>
+  <ul class="text-center list-group list-group-flush">
+    <li class="list-group-item"><a href="/b">/b/ Random and memes</a></li>
+    <li class="list-group-item"><a href="/beg">/beg/ Backend General</a></li>
+    <li class="list-group-item"><a href="/feg">/feg/ Frontend General</a></li>
+    <li class="list-group-item"><a href="/hwg">/hwg/ Hardware General</a></li>
+    <li class="list-group-item"><a href="/csg">/csg/ CyberSecurity General</a></li>
+  </ul>
+{% endblock %}
+
