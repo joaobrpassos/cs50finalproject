@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block main %}
+
+<h1 class="text-center"> {{ title }}!</h1>
+    <div class="posts">
+    <h2 class="text-center">All Posts:</h2>
+    <hr>
+    {% if posts %}
+        {% for post in posts %}
+            <div>
+            <div class="post container ">
+              <div class="row">
+                <h3>Board: {{ post["board"] }}</h3>
+                {% if post.file %}
+                    <div class="col">
+                      <img src="/file/{{ post.id }}" alt="Attached image" style="max-width: 300px; height: auto;">
+                    </div>
+                    <div class="col">
+                      <p><a href="/file/{{ post.id }}">file</a></p>
+                    </div>
+              {% endif %}
+              <div class="col">
+                <h3 class="title p-2"> {{ post["title"] }} </h3>
+              </div>
+              <div class="col">
+                  <h3 class="id --bs-info">Id:{{ post["id"] }}</h3>
+                </div>
+                <div class="col">
+                  <h3 class="id --bs-info">User:{{ post["userid"] }}</h3>
+              </div>
+                </div>
+              <div class="row">
+                <p class="content"> <pre>{{ post["content"] }}</pre> </p>
+              </div>
+                {% for reply in replies %}
+                    {% if int(reply["opid"]) == int(post["id"]) %}
+                    <div>
+                        <div class="container reply rounded-4">
+                          <div class="row">
+                            {% if reply["file"] %}
+                              <div class="col">
+                                 <img src="/filereply/{{ reply.id }}" alt="Attached image" style="max-width: 300px; height: auto;">
+                                <p><a href="/filereply/{{ reply.id }}">file</a></p>
+                              </div>
+                            {% endif %}
+                              <div class="row">
+                                <p class="reply_content"> <pre>{{ reply["content"] }}</pre> </p>
+                              </div>
+                              <div class="col">
+                                <h3 class="id --bs-info">Id:{{ reply["userid"] }}</h3>
+                                <h3 class="id --bs-info">No.{{ reply["id"] }}</h3>
+                              </div>
+                        </div>
+                      <br>
+                    {% endif %}
+                      </div>
+                {% endfor %}
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p class="text-center">No posts yet.</p>
+    {% endif %}
+{% endblock %}
+
