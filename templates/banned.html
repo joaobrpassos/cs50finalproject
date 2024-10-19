@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Banlist
+{% endblock %}
+
+{% block main %}
+    <h1 class="text-center">Banned Users:</h1>
+        {% if users %}
+            <ul class="text-center">
+            {% for user in users %}
+                    <li>User:{{ user["id"] }} IP:{{ user["ip"] }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <h2 class="text-center">No banned user</h2>
+        {% endif %}
+
+{% endblock %}
+
