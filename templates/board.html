@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block main %}
+
+<h1 class="text-center"> {{ title }}!</h1>
+{% if banned == 0 %}
+    <form name="postform" action="{{ action }}" class="postform" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="posttitle" class="form-label">Post Title</label>
+      <input type="text" class="form-control" name="posttitle" id="posttitle">
+    </div>
+    <div class="mb-3">
+      <label for="postcontent" class="form-label">Content</label>
+      <textarea type="text" class="form-control" name="postcontent" id="postcontent"></textarea>
+    </div>
+    <div class="mb-3 form-file">
+      <input type="file" class="form-file-input" id="postfile" name="postfile">
+    </div>
+    <button type="submit" id="submit" name="submit_npost" class="btn btn-primary">Submit</button>
+  </form>
+
+{% else %}
+  <h2>You are banned, GO AWAY!</h2>
+{% endif %}
+    <div class="posts">
+    <h2 class="text-center">All Posts:</h2>
+    <hr>
+    {% if posts %}
+        {% for post in posts %}
+            <div>
+            <div class="post container ">
+              <div class="row">
+              {% if post.file %}
+                    <div class="col">
+                      <img src="/file/{{ post.id }}" alt="Attached image" style="max-width: 300px; height: auto;">
+                    </div>
+                    <div class="col">
+                      <p><a href="/file/{{ post.id }}">file</a></p>
+                    </div>
+              {% endif %}
+              <div class="col">
+                <h3 class="title p-2"> {{ post["title"] }} </h3>
+              </div>
+              <div class="col">
+                  <p class="id --bs-info">Id:{{ post["id"] }}</p>
+                </div>
+                <div class="col">
+                  <p class="id --bs-info">User:{{ post["userid"] }}</p>
+              </div>
+              <div class="col">
+                <p class="id --bs-info">Post at:{{ post["time"] }}</p>
+            </div>
+                </div>
+              <div class="row">
+                <p class="content"> <pre>{{ post["content"] }}</pre> </p>
+              </div>
+            {% if userid == post["userid"] or userid in superusers %}
+              <form name="deletebtn" action="{{ action }}" method="post">
+                <input name="opid" value="{{ post['id'] }}" hidden>
+                <button class="btn btn-danger" name="deletebtn" type="submit">Delete post</button>
+              </form>
+              <br>
+            {% endif %}
+            {% if userid in superusers %}
+              {% if banned == 0 %}
+                <form name="banuser" action="{{ action }}" method="post">
+                  <input name="opid" value="{{ post['userid'] }}" hidden>
+                  <button class="btn btn-danger" name="submit_banuser" type="submit">Ban OP</button>
+                </form>
+              {% else %}
+                <form name="unbanuser" action="{{ action }}" method="post">
+                  <input name="opid" value="{{ post['userid'] }}" hidden>
+                  <button class="btn btn-danger" name="submit_unbanuser" type="submit">UnBan OP</button>
+                </form>
+              {% endif %}
+            {% endif %}
+            {% if banned == 0 %}
+              <form name="rform" class="postform" method="post" action="{{ action }}" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="replycontent" class="form-label">Reply OP</label>
+                    <textarea type="text" class="form-control" name="replycontent" id="replycontent"></textarea>
+                </div>
+                <div class="mb-3 form-file">
+                    <input type="file" class="form-file-input" name="replyfile">
+                </div>
+                <input type="hidden" value="{{ post['id'] }}" name="opid">
+                <button type="submit" id="submit" name="submit_rpost" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+            <div class="replies">
+            {% else %}
+              <h2>You are banned, GO AWAY!</h2>
+            {% endif %}
+                {% for reply in replies %}
+                    {% if int(reply["opid"]) == int(post["id"]) %}
+                    <div>
+                        <div class="container reply rounded-4">
+                          <div class="row">
+                            {% if reply["file"] %}
+                              <div class="col">
+                                 <img src="/filereply/{{ reply.id }}" alt="Attached image" style="max-width: 300px; height: auto;">
+                                <p><a href="/filereply/{{ reply.id }}">file</a></p>
+                              </div>
+                            {% endif %}
+                              <div class="row">
+                                <p class="reply_content"> <pre>{{ reply["content"] }}</pre> </p>
+                              </div>
+                              <div class="col">
+                                <h3 class="id --bs-info">Id:{{ reply["userid"] }}</h3>
+                                <h3 class="id --bs-info">No.{{ reply["id"] }}</h3>
+                              </div>
+                        </div>
+                        {% if userid == post["userid"] or userid in superusers %}
+                        <form name="rdeletebtn" action="{{ action }}" method="post">
+                          <input name="opid" value="{{ reply['id'] }}" hidden>
+                          <button class="btn btn-danger" name="rdeletebtn" type="submit">Delete reply</button>
+                        </form>
+                        <br>
+                      {% endif %}
+                      {% if userid in superusers %}
+                        {% if banned == 0 %}
+                          <form name="banuser" action="{{ action }}" method="post">
+                            <input name="opid" value="{{ post['userid'] }}" hidden>
+                            <button class="btn btn-danger" name="submit_banuser" type="submit">Ban User</button>
+                          </form>
+                        {% else %}
+                          <form name="unbanuser" action="{{ action }}" method="post">
+                            <input name="opid" value="{{ post['userid'] }}" hidden>
+                            <button class="btn btn-danger" name="submit_unbanuser" type="submit">UnBan User</button>
+                          </form>
+                        {% endif %}
+                      {% endif %}
+                      <br>
+                    {% endif %}
+                      </div>
+                {% endfor %}
+            </div>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p class="text-center">No posts yet.</p>
+    {% endif %}
+{% endblock %}
