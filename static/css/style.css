@@ -1,0 +1,22 @@
+.postform {
+    margin: 3%;
+    margin-right: 50%;
+}
+
+.post {
+    margin-left: 4%;
+    margin-bottom: 3%;
+    margin-right: 0%;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 1%;
+}
+
+
+.reply {
+    margin-left: 8%;
+    margin-bottom: 3%;
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 1%;
+}
