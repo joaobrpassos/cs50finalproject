@@ -15,6 +15,43 @@ def main():
     board(endpoint="/csg", name="/csg/ CyberSecurity General", bname="csg")
     server.run(debug=True)
 
+def create_tables():
+    db = get_db().cursor()
+    db.execute('''
+            CREATE TABLE IF NOT EXISTS posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            userid INTEGER NOT NULL,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            file BLOB,
+            board TEXT NOT NULL,
+            date TEXT NOT NULL
+        )
+        ''')
+    db.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+            ip TEXT NOT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            banned INTEGER DEFAULT 0,
+            postsid TEXT
+        )
+        ''')
+
+    db.execute('''
+            CREATE TABLE IF NOT EXISTS replies (
+            ip TEXT NOT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            userid INTEGER,
+            opid TEXT NOT NULL,
+            content TEXT NOT NULL,
+            file BLOB
+        )
+        ''')
+
+@server.before_request
+def initialize_database():
+    create_tables()
+
 def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect("cschan.db")
@@ -60,38 +97,7 @@ def get_reply_file(reply_id):
 
 
 
-with server.app_context():
-    db = get_db().cursor()
-    db.execute('''
-    CREATE TABLE IF NOT EXISTS posts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userid INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        content TEXT NOT NULL,
-        file BLOB,
-        board TEXT NOT NULL,
-        date TEXT NOT NULL
-    )
-    ''')
-    db.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        ip TEXT NOT NULL,
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        banned INTEGER NOT NULL,
-        postsid TEXT
-    )
-    ''')
 
-    db.execute('''
-    CREATE TABLE IF NOT EXISTS replies (
-        ip TEXT NOT NULL,
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userid INTEGER,
-        opid TEXT NOT NULL,
-        content TEXT NOT NULL,
-        file BLOB
-    )
-    ''')
 
 @server.route("/")
 def homepage():
@@ -122,7 +128,7 @@ def board(endpoint, name, bname):
 
                     file_data = file.read() if file else None
 
-                    db.execute("INSERT INTO posts (title, content, file, userid, board, time) VALUES (?, ?, ?, ?, ?, ?)",
+                    db.execute("INSERT INTO posts (title, content, file, userid, board, date) VALUES (?, ?, ?, ?, ?, ?)",
                            (title, content, file_data, userid, bname, date))
                     db.connection.commit()
 
@@ -249,16 +255,26 @@ def board(endpoint, name, bname):
         else:
             posts = db.execute("SELECT * FROM posts WHERE board = ?", (bname, )).fetchall()
             replies = db.execute("SELECT * FROM replies").fetchall()
-
             ip = request.remote_addr
-            userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip, ))
-            userid = userid_query.fetchone()
+            try:
+                userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip,))
+                userid = userid_query.fetchone()
+
+                if not userid:
+                    db.execute("INSERT INTO users (ip) VALUES (?)", (ip,))
+                    userid = db.lastrowid
+                else:
+                    userid = userid[0]
+            except Exception as e:
+                    print(f"DB Error: {e}")
+                    return "DB Error", 500
+
 
             banned_query = db.execute("SELECT banned FROM users WHERE ip = ?", (ip, ))
             banned = banned_query.fetchone()
 
 
-            return render_template("board.html", title=name, posts=posts, replies=replies, action=endpoint, userid=userid[0], int=int, superusers=superusers, banned=banned[0], board=bname)
+            return render_template("board.html", title=name, posts=posts, replies=replies, action=endpoint, userid=userid, int=int, superusers=superusers, banned=banned[0], board=bname)
 
 
 @server.route("/ban", methods=["GET"])
@@ -277,4 +293,4 @@ def all_posts():
 
 
 if __name__ == "__main__":
-    main()
+    main()   

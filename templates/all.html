@@ -12,7 +12,6 @@
     <hr>
     {% if posts %}
         {% for post in posts %}
-            <div>
             <div class="post container ">
               <div class="row">
                 <h3>Board: {{ post["board"] }}</h3>
@@ -28,18 +27,19 @@
                 <h3 class="title p-2"> {{ post["title"] }} </h3>
               </div>
               <div class="col">
-                  <h3 class="id --bs-info">Id:{{ post["id"] }}</h3>
-                </div>
-                <div class="col">
-                  <h3 class="id --bs-info">User:{{ post["userid"] }}</h3>
+                  <h3 class="id --bs-info">Id:{{ post["userid"] }}</h3>
               </div>
+              <div class="col">
+                  <h3 class="id --bs-info">No.{{ post["id"] }}</h3>
+                </div>
+
                 </div>
               <div class="row">
                 <p class="content"> <pre>{{ post["content"] }}</pre> </p>
               </div>
+            </div>
                 {% for reply in replies %}
                     {% if int(reply["opid"]) == int(post["id"]) %}
-                    <div>
                         <div class="container reply rounded-4">
                           <div class="row">
                             {% if reply["file"] %}
@@ -48,19 +48,21 @@
                                 <p><a href="/filereply/{{ reply.id }}">file</a></p>
                               </div>
                             {% endif %}
-                              <div class="row">
+                              <div class="col">
                                 <p class="reply_content"> <pre>{{ reply["content"] }}</pre> </p>
                               </div>
                               <div class="col">
                                 <h3 class="id --bs-info">Id:{{ reply["userid"] }}</h3>
+                              </div>
+                              <div class="col">
                                 <h3 class="id --bs-info">No.{{ reply["id"] }}</h3>
                               </div>
+   
+                          </div>
                         </div>
                       <br>
                     {% endif %}
-                      </div>
-                {% endfor %}
-            </div>
+                  {% endfor %}
             <hr>
         {% endfor %}
     {% else %}
