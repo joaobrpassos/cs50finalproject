@@ -114,7 +114,12 @@ def board(endpoint, name, bname):
                 file = request.files["postfile"]
                 current_time = datetime.datetime.now()
                 date = current_time.strftime("%Y-%m-%d %H:%M")
-                ip = request.remote_addr
+                if request.headers.getlist("X-Forwarded-For"):
+                    ip = request.headers.getlist("X-Forwarded-For")[0]
+
+                else:
+                    ip = request.remote_addr
+
 
                 try:
                     userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip,))
@@ -140,7 +145,12 @@ def board(endpoint, name, bname):
                 opid = request.form.get("opid")
                 content = request.form.get("replycontent")
                 file = request.files["replyfile"]
-                ip = request.remote_addr
+                
+                if request.headers.getlist("X-Forwarded-For"):
+                    ip = request.headers.getlist("X-Forwarded-For")[0]
+
+                else:
+                    ip = request.remote_addr
 
                 try:
                     userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip,))
@@ -164,7 +174,13 @@ def board(endpoint, name, bname):
 
             elif "deletebtn" in request.form:
                 opid = request.form.get("opid")
-                ip = request.remote_addr
+                if request.headers.getlist("X-Forwarded-For"):
+                    ip = request.headers.getlist("X-Forwarded-For")[0]
+
+                else:
+                    ip = request.remote_addr
+
+
 
                 try:
                     userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip,))
@@ -185,7 +201,12 @@ def board(endpoint, name, bname):
 
             elif "rdeletebtn" in request.form:
                 opid = request.form.get("opid")
-                ip = request.remote_addr
+                if request.headers.getlist("X-Forwarded-For"):
+                    ip = request.headers.getlist("X-Forwarded-For")[0]
+
+                else:
+                    ip = request.remote_addr
+
 
                 try:
                     userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip,))
@@ -206,7 +227,13 @@ def board(endpoint, name, bname):
 
             elif "submit_banuser" in request.form:
                 opid = request.form.get("opid")
-                ip = request.remote_addr
+                if request.headers.getlist("X-Forwarded-For"):
+                    ip = request.headers.getlist("X-Forwarded-For")[0]
+
+                else:
+                    ip = request.remote_addr
+
+
 
                 try:
                     userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip,))
@@ -228,7 +255,12 @@ def board(endpoint, name, bname):
 
             elif "submit_unbanuser" in request.form:
                 opid = request.form.get("opid")
-                ip = request.remote_addr
+                if request.headers.getlist("X-Forwarded-For"):
+                    ip = request.headers.getlist("X-Forwarded-For")[0]
+
+                else:
+                    ip = request.remote_addr
+
 
                 try:
                     userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip,))
@@ -255,7 +287,12 @@ def board(endpoint, name, bname):
         else:
             posts = db.execute("SELECT * FROM posts WHERE board = ?", (bname, )).fetchall()
             replies = db.execute("SELECT * FROM replies").fetchall()
-            ip = request.remote_addr
+            if request.headers.getlist("X-Forwarded-For"):
+                ip = request.headers.getlist("X-Forwarded-For")[0]
+
+            else:
+                ip = request.remote_addr
+
             try:
                 userid_query = db.execute("SELECT id FROM users WHERE ip = ?", (ip,))
                 userid = userid_query.fetchone()
